@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('pincode');
             $table->enum('marital_status', ['Married', 'Unmarried']);
             $table->date('wedding_date')->nullable();
+            $table->json('hobbies')->nullable();
             $table->string('photo')->nullable();
             $table->timestamps();
         });
