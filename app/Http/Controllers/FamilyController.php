@@ -8,11 +8,7 @@ class FamilyController extends Controller
 {
     public function create()
     {
-        // Assuming you're storing state/city lists statically or via a config file
-        $states = ['Gujarat', 'Maharashtra', 'Rajasthan'];  // You can pull from DB too
-        $cities = ['Ahmedabad', 'Surat', 'Mumbai', 'Jaipur'];        
-
-        return view('families.create', compact('states', 'cities'));
+        return view('families.create');
     }
 
     public function store(Request $request) {
@@ -38,14 +34,14 @@ class FamilyController extends Controller
             'members.*.photo' => 'nullable|image|max:2048',
         ]);
     
-        $photoPath = $request->file('photo')?->store('family_photos');
-    
+        $photoPath = $request->file('photo')?->store('family_photos', 'public');
+
         $family = Family::create($request->only([
             'name', 'surname', 'birthdate', 'mobile', 'address', 'state', 'city', 'pincode', 'marital_status', 'wedding_date'
         ]) + ['photo' => $photoPath, 'hobbies' => json_encode($request->hobbies)]);
     
         foreach ($request->members ?? [] as $member) {
-            $memberPhoto = isset($member['photo']) ? $member['photo']->store('member_photos') : null;
+            $memberPhoto = isset($member['photo']) ? $member['photo']->store('member_photos', 'public') : null;
             $family->members()->create([
                 'name' => $member['name'],
                 'birthdate' => $member['birthdate'],
@@ -62,14 +58,13 @@ class FamilyController extends Controller
 
     public function index()
     {
-        $families = Family::withCount('members')->get();
+        $families = Family::withCount('members')->orderBy('created_at', 'desc')->get();
 
         return view('families.index', compact('families'));
     }
 
-    public function show(Family $family)
-    {
-        $family->load('members', 'hobbies');
+    public function show($id) {
+        $family = Family::with('members')->findOrFail($id);
         return view('families.show', compact('family'));
     }
 }

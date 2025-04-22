@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FamilyController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,4 +18,6 @@ Route::get('/', function () {
     return view('dashboard');
 });
 
-Route::resource('families', App\Http\Controllers\FamilyController::class);
+Route::resource('families', FamilyController::class);
+
+Route::get('/families/{id}', [FamilyController::class, 'show']);

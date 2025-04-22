@@ -21,6 +21,7 @@ class Family extends Model
         'marital_status',
         'wedding_date',
         'photo',
+        'hobbies'
     ];
 
     public function members()

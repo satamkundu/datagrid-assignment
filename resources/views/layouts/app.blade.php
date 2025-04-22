@@ -12,7 +12,7 @@
 <body class="bg-gray-100 min-h-screen">
     <nav class="bg-white shadow mb-6">
         <div class="max-w-7xl mx-auto px-4 py-4">
-            <h1 class="text-xl font-bold">Community Family Management</h1>
+            <a href="/" class="text-xl font-bold hover:text-gray-600">Community Family Management</a>
         </div>
     </nav>
 

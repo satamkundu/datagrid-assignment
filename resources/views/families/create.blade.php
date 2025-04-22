@@ -2,64 +2,69 @@
 
 @section('content')
     <div class="max-w-5xl mx-auto p-6 bg-white rounded-xl shadow">
-        <h2 class="text-2xl font-bold mb-6">Add Family</h2>
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">Add Family</h2>
+            <a href="{{ route('families.index') }}" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
+                View Families
+            </a>
+        </div>
         <form action="{{ route('families.store') }}" method="POST" enctype="multipart/form-data" id="familyForm">
             @csrf
 
             <!-- Head Info -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="flex flex-col">
-                    <label for="name" class="mb-1 font-medium">Name</label>
+                    <label for="name" class="mb-1 font-medium">Name <span class="text-red-500">*</span></label>
                     <input id="name" name="name" type="text" class="border p-2 rounded"
                         placeholder="Enter your name" required>
                 </div>
 
                 <div class="flex flex-col">
-                    <label for="surname" class="mb-1 font-medium">Surname</label>
+                    <label for="surname" class="mb-1 font-medium">Surname <span class="text-red-500">*</span></label>
                     <input id="surname" name="surname" type="text" class="border p-2 rounded"
                         placeholder="Enter your surname" required>
                 </div>
 
                 <div class="flex flex-col">
-                    <label for="birthdate" class="mb-1 font-medium">Birth Date</label>
+                    <label for="birthdate" class="mb-1 font-medium">Birth Date <span class="text-red-500">*</span></label>
                     <input id="birthdate" name="birthdate" type="date" class="border p-2 rounded"
                         placeholder="Select your birth date" required>
                 </div>
 
                 <div class="flex flex-col">
-                    <label for="mobile" class="mb-1 font-medium">Mobile Number</label>
+                    <label for="mobile" class="mb-1 font-medium">Mobile Number <span class="text-red-500">*</span></label>
                     <input id="mobile" name="mobile" type="text" class="border p-2 rounded"
                         placeholder="Enter your mobile number" required>
                 </div>
 
                 <div class="flex flex-col">
-                    <label for="address" class="mb-1 font-medium">Address</label>
+                    <label for="address" class="mb-1 font-medium">Address <span class="text-red-500">*</span></label>
                     <input id="address" name="address" type="text" class="border p-2 rounded"
                         placeholder="Enter your address" required>
                 </div>
 
                 <div class="flex flex-col">
-                    <label for="state" class="mb-1 font-medium">State</label>
+                    <label for="state" class="mb-1 font-medium">State <span class="text-red-500">*</span></label>
                     <select name="state" id="state" class="border p-2 rounded select2" required>
                         <option value="">Select State</option>
                     </select>
                 </div>
 
                 <div class="flex flex-col">
-                    <label for="city" class="mb-1 font-medium">City</label>
+                    <label for="city" class="mb-1 font-medium">City <span class="text-red-500">*</span></label>
                     <select name="city" id="city" class="border p-2 rounded select2" required>
                         <option value="">Select City</option>
                     </select>
                 </div>
 
                 <div class="flex flex-col">
-                    <label for="pincode" class="mb-1 font-medium">Pincode</label>
+                    <label for="pincode" class="mb-1 font-medium">Pincode <span class="text-red-500">*</span></label>
                     <input id="pincode" name="pincode" type="text" class="border p-2 rounded"
                         placeholder="Enter your pincode" required>
                 </div>
 
                 <div class="flex flex-col">
-                    <label for="marital_status" class="mb-1 font-medium">Marital Status</label>
+                    <label for="marital_status" class="mb-1 font-medium">Marital Status <span class="text-red-500">*</span></label>
                     <select id="marital_status" name="marital_status" class="border p-2 rounded marital-status" required>
                         <option value="">Select Marital Status</option>
                         <option value="Married">Married</option>
@@ -82,7 +87,7 @@
 
             <!-- Hobbies -->
             <div class="mt-6" id="hobbies-container">
-                <label class="block mb-2 font-medium">Hobbies</label>
+                <label class="block mb-2 font-medium">Hobbies <span class="text-red-500">*</span></label>
                 <div id="hobby-list" class="space-y-2">
                     <div class="hobby-item flex gap-2">
                         <input type="text" name="hobbies[]" class="border p-2 rounded flex-1"
@@ -177,29 +182,79 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
-    <script>
-        $(function() {
-            $('.select2').select2();
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-            $('.marital-status').on('change', function() {
-                $('#wedding_container').toggleClass('hidden', $(this).val() !== 'Married');
+    <script>
+        // Initialize components and event handlers
+        $(function() {
+            initializeSelect2();
+            initializeMaritalStatus();
+            initializeMobileNumberManagement();
+            initializeMemberManagement();
+            initializeHobbyManagement();
+            initializeLocationData();
+            initializeFormSubmission();
+        });
+
+        // Component initialization functions
+        function initializeSelect2() {
+            $('.select2').select2();
+        }
+
+        // function initializeMaritalStatus() {
+        //     $('.marital-status').on('change', function() {
+        //         $('#wedding_container').toggleClass('hidden', $(this).val() !== 'Married');
+        //     });
+
+        //     $('input[name="birthdate"]').on('change', function() {
+        //         const age = getAge($(this).val());
+        //         if (age < 21) {
+        //             Swal.fire({
+        //                 icon: 'error',
+        //                 title: 'Age Restriction',
+        //                 text: 'Head of family must be at least 21 years old.'
+        //             });
+        //             $(this).val('');
+        //         }
+        //     });
+        // }
+
+        function initializeMobileNumberManagement() {
+            $('#mobile').on('input', function() {
+                // Remove any non-digit characters
+                let value = $(this).val().replace(/\D/g, '');
+
+                // Limit to 10 digits
+                if (value.length > 10) {
+                    value = value.slice(0, 10);
+                }
+                $(this).val(value);
             });
 
-            let memberIndex = 0;
-            let allowAddMember = true;
+            $('#mobile').on('blur', function() {
+                const value = $(this).val().replace(/\D/g, '');
+                if (value.length !== 10) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Mobile Number',
+                        text: 'Please enter a valid 10-digit mobile number'
+                    });
+                    $(this).val('');
+                }
+            });
+        }
 
-            function isLastMemberValid() {
-                const last = $('#members .member').last();
-                if (last.length === 0) return true;
-                const name = last.find('.member-name').val();
-                const birthdate = last.find('.member-birthdate').val();
-                const status = last.find('.member-status').val();
-                return name && birthdate && status;
-            }
+        // Member management functionality
+        function initializeMemberManagement() {
+            let memberIndex = 0;
 
             $('#addMember').click(function() {
                 if (!isLastMemberValid()) {
-                    alert('Please complete the previous member details before adding another.');
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Incomplete Details',
+                        text: 'Please complete the previous member details before adding another.'
+                    });
                     return;
                 }
                 const tpl = $('#memberTemplate').html().replaceAll('_index_', memberIndex);
@@ -216,10 +271,10 @@
             $(document).on('click', '.delete-member', function() {
                 $(this).closest('.member').remove();
             });
+        }
 
-        });
-
-        $(document).ready(function() {
+        // Hobby management functionality
+        function initializeHobbyManagement() {
             const hobbyList = $('#hobby-list');
             const addHobbyBtn = $('#add-hobby');
 
@@ -228,7 +283,11 @@
                 const lastHobby = hobbyItems.last();
 
                 if (lastHobby.length && !lastHobby.find('input').val()) {
-                    alert('Please enter a hobby before adding another');
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Empty Hobby',
+                        text: 'Please enter a hobby before adding another'
+                    });
                     return;
                 }
 
@@ -241,10 +300,76 @@
             hobbyList.on('click', '.delete-hobby', function() {
                 $(this).closest('.hobby-item').remove();
             });
-        });
+        }
 
-        $(document).ready(function() {
-            // AJAX call request to fetch states of India
+        // Location data management
+        function initializeLocationData() {
+            fetchStates();
+            $('#state').on('change', fetchCities);
+        }
+
+        // Form submission handling
+        function initializeFormSubmission() {
+            $('#familyForm').on('submit', function(e) {
+                e.preventDefault();
+                submitForm(this);
+            });
+        }
+
+function initializeMaritalStatus() {
+    // Handle head's marital status
+    $('.marital-status').on('change', function() {
+        const isMarried = $(this).val() === 'Married';
+        $('#wedding_container').toggleClass('hidden', !isMarried);
+        $('#wedding_date').prop('required', isMarried);
+    });
+
+    // Handle member's marital status
+    $(document).on('change', '.member-status', function() {
+        const container = $(this).closest('.member');
+        const weddingContainer = container.find('.wedding-container');
+        const weddingDateInput = container.find('input[name$="[wedding_date]"]');
+        const isMarried = $(this).val() === 'Married';
+        
+        weddingContainer.toggleClass('hidden', !isMarried);
+        weddingDateInput.prop('required', isMarried);
+    });
+
+    $('input[name="birthdate"]').on('change', function() {
+        const age = getAge($(this).val());
+        if (age < 21) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Age Restriction',
+                text: 'Head of family must be at least 21 years old.'
+            });
+            $(this).val('');
+        }
+    });
+}
+        // Utility functions
+        function getAge(dateString) {
+            const today = new Date();
+            const birthDate = new Date(dateString);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+
+        function isLastMemberValid() {
+            const last = $('#members .member').last();
+            if (last.length === 0) return true;
+            const name = last.find('.member-name').val();
+            const birthdate = last.find('.member-birthdate').val();
+            const status = last.find('.member-status').val();
+            return name && birthdate && status;
+        }
+
+        // AJAX functions
+        function fetchStates() {
             $.ajax({
                 url: "https://countriesnow.space/api/v0.1/countries/states",
                 type: "POST",
@@ -253,43 +378,86 @@
                     country: "India"
                 }),
                 success: function(res) {
-                    // Check if response contains states data
                     if (res.data && res.data.states) {
-                        // Clear existing options and add default option
                         $('#state').empty().append('<option value="">Select State</option>');
-                        // Iterate through states and append options to select element
                         res.data.states.forEach(state => {
-                            $('#state').append(
-                                `<option value="${state.name}">${state.name}</option>`);
+                            $('#state').append(`<option value="${state.name}">${state.name}</option>`);
                         });
                     }
                 }
             });
+        }
 
-            // AJAX call request to fetch cities of selected state of India
-            $('#state').on('change', function() {
-                const state = $(this).val();
-                if (!state) return;
+        function fetchCities() {
+            const state = $(this).val();
+            if (!state) return;
 
-                $.ajax({
-                    url: "https://countriesnow.space/api/v0.1/countries/state/cities",
-                    type: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify({
-                        country: "India",
-                        state: state
-                    }),
-                    success: function(res) {
-                        if (res.data) {
-                            $('#city').empty().append('<option value="">Select City</option>');
-                            res.data.forEach(city => {
-                                $('#city').append(
-                                    `<option value="${city}">${city}</option>`);
-                            });
-                        }
+            $.ajax({
+                url: "https://countriesnow.space/api/v0.1/countries/state/cities",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    country: "India",
+                    state: state
+                }),
+                success: function(res) {
+                    if (res.data) {
+                        $('#city').empty().append('<option value="">Select City</option>');
+                        res.data.forEach(city => {
+                            $('#city').append(`<option value="${city}">${city}</option>`);
+                        });
                     }
-                });
+                }
             });
-        });
+        }
+
+        function submitForm(form) {             
+            let formData = new FormData(form);
+
+            $.ajax({
+                url: $(form).attr('action'),
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                beforeSend: function() {
+                    $('button[type="submit"]').prop('disabled', true).text('Submitting...');
+                },
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Family created successfully!',
+                        timer: 2000
+                    }).then(() => {
+                        window.location.href = "{{ route('families.index') }}";
+                    });
+                },
+                error: function(xhr) {
+                    console.log(xhr.responseJSON);
+                    if (xhr.status === 422) {
+                        let errorMessage = '';
+                        let errors = xhr.responseJSON.errors;
+                        for (const key in errors) {
+                            errorMessage += `${key}: ${errors[key][0]}\n`;
+                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Validation Error',
+                            text: errorMessage
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Something went wrong. Please check your input.'
+                        });
+                    }
+                },
+                complete: function() {
+                    $('button[type="submit"]').prop('disabled', false).text('Submit');
+                }
+            });
+        }
     </script>
 @endsection
