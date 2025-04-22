@@ -37,7 +37,10 @@
                     </td>
                 </tr>
             @endif
-        </tbody>
+        </tbody>        
     </table>
+    <div class="mt-6">
+        {{ $families->links() }}
+    </div>
 </div>
 @endsection

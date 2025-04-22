@@ -58,7 +58,7 @@ class FamilyController extends Controller
 
     public function index()
     {
-        $families = Family::withCount('members')->orderBy('created_at', 'desc')->get();
+        $families = Family::withCount('members')->orderBy('created_at', 'desc')->paginate(1);
 
         return view('families.index', compact('families'));
     }
