@@ -52,13 +52,16 @@ class FamilyController extends Controller
             ]);
         }
     
-        return redirect()->back()->with('success', 'Family added successfully!');
+        return response()->json([
+            'success' => true,
+            'message' => 'Family added successfully!'
+        ]);
     }
     
 
     public function index()
     {
-        $families = Family::withCount('members')->orderBy('created_at', 'desc')->paginate(1);
+        $families = Family::withCount('members')->orderBy('created_at', 'desc')->paginate(10);
 
         return view('families.index', compact('families'));
     }

@@ -18,6 +18,7 @@ Route::get('/', function () {
     return view('dashboard');
 });
 
-Route::resource('families', FamilyController::class);
-
-Route::get('/families/{id}', [FamilyController::class, 'show']);
+Route::get('/families', [FamilyController::class, 'index'])->name('families.index');
+Route::post('/families', [FamilyController::class, 'store'])->name('families.store');
+Route::get('/families/create', [FamilyController::class, 'create'])->name('families.create');
+Route::get('/families/{id}', [FamilyController::class, 'show'])->name('families.show');

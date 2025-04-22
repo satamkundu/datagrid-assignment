@@ -4,7 +4,8 @@
     <div class="max-w-5xl mx-auto p-6 bg-white rounded-xl shadow">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold">Add Family</h2>
-            <a href="{{ route('families.index') }}" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
+            <a href="{{ route('families.index') }}"
+                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
                 View Families
             </a>
         </div>
@@ -64,7 +65,8 @@
                 </div>
 
                 <div class="flex flex-col">
-                    <label for="marital_status" class="mb-1 font-medium">Marital Status <span class="text-red-500">*</span></label>
+                    <label for="marital_status" class="mb-1 font-medium">Marital Status <span
+                            class="text-red-500">*</span></label>
                     <select id="marital_status" name="marital_status" class="border p-2 rounded marital-status" required>
                         <option value="">Select Marital Status</option>
                         <option value="Married">Married</option>
@@ -79,9 +81,10 @@
                 </div>
 
                 <div class="flex flex-col">
-                    <label for="photo" class="mb-1 font-medium">Photo</label>
-                    <input id="photo" name="photo" type="file" accept="image/*" class="border p-2 rounded"
-                        placeholder="Choose a photo">
+                    <label for="photo" class="mb-1 font-medium">Photo <span class="text-xs text-gray-500">(PNG, JPG,
+                            JPEG up to 2MB)</span></label>
+                    <input id="photo" name="photo" type="file" accept=".png,.jpg,.jpeg"
+                        class="border p-2 rounded" placeholder="Choose a photo" onchange="validateFileInput(this, 2048)">
                 </div>
             </div>
 
@@ -116,8 +119,7 @@
             <!-- Submit -->
             <div class="mt-6">
                 <button type="submit"
-                    class="w-full px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">Add
-                    Family</button>
+                    class="w-full px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">Add Family</button>
             </div>
         </form>
     </div>
@@ -133,14 +135,14 @@
                 <label for="members[_index_][name]" class="mb-1 font-medium text-gray-700">Name</label>
                 <input id="members[_index_][name]" name="members[_index_][name]" type="text"
                     placeholder="Enter member's name"
-                    class="border p-2 rounded focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all"
+                    class="border p-2 rounded focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all member-name"
                     required>
             </div>
 
             <div class="flex flex-col">
                 <label for="members[_index_][birthdate]" class="mb-1 font-medium text-gray-700">Birth Date</label>
                 <input id="members[_index_][birthdate]" name="members[_index_][birthdate]" type="date"
-                    class="border p-2 rounded focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all"
+                    class="border p-2 rounded focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all member-birthdate"
                     required>
             </div>
 
@@ -170,9 +172,10 @@
             </div>
 
             <div class="flex flex-col">
-                <label for="members[_index_][photo]" class="mb-1 font-medium text-gray-700">Photo</label>
-                <input id="members[_index_][photo]" name="members[_index_][photo]" type="file" accept="image/*"
-                    class="border p-2 rounded focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all">
+                <label for="members[_index_][photo]" class="mb-1 font-medium text-gray-700">Photo<span class="text-xs text-gray-500">(PNG, JPG,
+                    JPEG up to 2MB)</span></label>
+                <input id="members[_index_][photo]" name="members[_index_][photo]" type="file" accept=".png,.jpg,.jpeg"
+                    class="border p-2 rounded focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all" onchange="validateFileInput(this, 2048)">
             </div>
         </div>
     </template>
@@ -188,8 +191,10 @@
         // Initialize components and event handlers
         $(function() {
             initializeSelect2();
+            initializeBirthdateValidation();
             initializeMaritalStatus();
             initializeMobileNumberManagement();
+            initializePincodeValidation();
             initializeMemberManagement();
             initializeHobbyManagement();
             initializeLocationData();
@@ -201,23 +206,44 @@
             $('.select2').select2();
         }
 
-        // function initializeMaritalStatus() {
-        //     $('.marital-status').on('change', function() {
-        //         $('#wedding_container').toggleClass('hidden', $(this).val() !== 'Married');
-        //     });
+        function initializePincodeValidation() {
+            $('#pincode').on('input', function() {
+                // Remove any non-digit characters
+                let value = $(this).val().replace(/\D/g, '');
 
-        //     $('input[name="birthdate"]').on('change', function() {
-        //         const age = getAge($(this).val());
-        //         if (age < 21) {
-        //             Swal.fire({
-        //                 icon: 'error',
-        //                 title: 'Age Restriction',
-        //                 text: 'Head of family must be at least 21 years old.'
-        //             });
-        //             $(this).val('');
-        //         }
-        //     });
-        // }
+                // Limit to 6 digits
+                if (value.length > 6) {
+                    value = value.slice(0, 6);
+                }
+                $(this).val(value);
+            });
+
+            $('#pincode').on('blur', function() {
+                const value = $(this).val().replace(/\D/g, '');
+                if (value.length !== 6) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Pincode',
+                        text: 'Please enter a valid 6-digit pincode'
+                    });
+                    $(this).val('');
+                }
+            });
+        }
+
+        function initializeBirthdateValidation() {
+            $('input[name="birthdate"]').on('change', function() {
+                const age = getAge($(this).val());
+                if (age < 21) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Age Restriction',
+                        text: 'Head of family must be at least 21 years old.'
+                    });
+                    $(this).val('');
+                }
+            });
+        }
 
         function initializeMobileNumberManagement() {
             $('#mobile').on('input', function() {
@@ -273,6 +299,36 @@
             });
         }
 
+        function validateFileInput(input, maxSizeKB) {
+            const file = input.files[0];
+            if (file) {
+                // Check file size
+                const fileSizeKB = file.size / 1024;
+                if (fileSizeKB > maxSizeKB) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'File Too Large',
+                        text: `File size must be less than ${maxSizeKB/1024}MB`
+                    });
+                    input.value = '';
+                    return false;
+                }
+
+                // Check file type
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                if (!validTypes.includes(file.type)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid File Type',
+                        text: 'Please upload only JPG, JPEG or PNG files'
+                    });
+                    input.value = '';
+                    return false;
+                }
+            }
+            return true;
+        }
+
         // Hobby management functionality
         function initializeHobbyManagement() {
             const hobbyList = $('#hobby-list');
@@ -316,37 +372,25 @@
             });
         }
 
-function initializeMaritalStatus() {
-    // Handle head's marital status
-    $('.marital-status').on('change', function() {
-        const isMarried = $(this).val() === 'Married';
-        $('#wedding_container').toggleClass('hidden', !isMarried);
-        $('#wedding_date').prop('required', isMarried);
-    });
-
-    // Handle member's marital status
-    $(document).on('change', '.member-status', function() {
-        const container = $(this).closest('.member');
-        const weddingContainer = container.find('.wedding-container');
-        const weddingDateInput = container.find('input[name$="[wedding_date]"]');
-        const isMarried = $(this).val() === 'Married';
-        
-        weddingContainer.toggleClass('hidden', !isMarried);
-        weddingDateInput.prop('required', isMarried);
-    });
-
-    $('input[name="birthdate"]').on('change', function() {
-        const age = getAge($(this).val());
-        if (age < 21) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Age Restriction',
-                text: 'Head of family must be at least 21 years old.'
+        function initializeMaritalStatus() {
+            // Handle head's marital status
+            $('.marital-status').on('change', function() {
+                const isMarried = $(this).val() === 'Married';
+                $('#wedding_container').toggleClass('hidden', !isMarried);
+                $('#wedding_date').prop('required', isMarried);
             });
-            $(this).val('');
+
+            // Handle member's marital status
+            $(document).on('change', '.member-status', function() {
+                const container = $(this).closest('.member');
+                const weddingContainer = container.find('.wedding-container');
+                const weddingDateInput = container.find('input[name$="[wedding_date]"]');
+                const isMarried = $(this).val() === 'Married';
+
+                weddingContainer.toggleClass('hidden', !isMarried);
+                weddingDateInput.prop('required', isMarried);
+            });
         }
-    });
-}
         // Utility functions
         function getAge(dateString) {
             const today = new Date();
@@ -365,6 +409,7 @@ function initializeMaritalStatus() {
             const name = last.find('.member-name').val();
             const birthdate = last.find('.member-birthdate').val();
             const status = last.find('.member-status').val();
+            console.log(name, birthdate, status);
             return name && birthdate && status;
         }
 
@@ -411,7 +456,7 @@ function initializeMaritalStatus() {
             });
         }
 
-        function submitForm(form) {             
+        function submitForm(form) {
             let formData = new FormData(form);
 
             $.ajax({
@@ -421,7 +466,8 @@ function initializeMaritalStatus() {
                 processData: false,
                 contentType: false,
                 beforeSend: function() {
-                    $('button[type="submit"]').prop('disabled', true).text('Submitting...');
+                    $('button[type="submit"]').addClass('opacity-50 cursor-not-allowed').prop('disabled', true)
+                        .text('Submitting...');
                 },
                 success: function(response) {
                     Swal.fire({
@@ -455,7 +501,8 @@ function initializeMaritalStatus() {
                     }
                 },
                 complete: function() {
-                    $('button[type="submit"]').prop('disabled', false).text('Submit');
+                    $('button[type="submit"]').removeClass('opacity-50 cursor-not-allowed').prop('disabled',
+                        false).text('Add Family');
                 }
             });
         }
